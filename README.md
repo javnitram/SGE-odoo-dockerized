@@ -1,7 +1,15 @@
 # Introducción
 Proyecto inicial para principantes con el stack de Odoo, Docker y Docker Compose.
 
-## Objetivos
+## Contenidos
+- [Objetivos](#objetivos)
+- [Primeros pasos](#primeros-pasos)
+- [Creación de la primera base de datos en Odoo y backup del entorno](#creación-de-la-primera-base-de-datos-en-odoo-y-backup-del-entorno)
+- [Restaurar tu backup](#restaurar-tu-backup)
+- [Siguientes pasos...](#siguientes-pasos)
+- [Conclusión](#conclusión)
+
+# Objetivos
 - :computer: Establecer un entorno de trabajo básico para seguir el curso.
 - :whale2: Favorecer el uso de Docker frente a máquinas virtuales convencionales.
 - :package: Recordar cómo hacer copias de directorios con ```tar```.
