@@ -65,6 +65,7 @@ function set_permissions_for_host() {
     # anfitrión pueda acceder.
     error="false"
     for i in "${SERVICES[@]}"; do
+        mkdir -p "$i" || error="true"
         find "$i" -type d -exec chmod 777 {} \; || error="true"
         find "$i" -type f -exec chmod 666 {} \; || error="true"
         chown -R "${DOCKER_USER}" "$i" || error="true"
