@@ -19,7 +19,6 @@ services:
       # Abre el puerto 5432 en el container al exterior sin tocar nada de la configuración del postgresql
       # Solo para desarrollo. Comentar en produccion
       - '5432'
-    restart: always             # run as a service
   odoo:
     image: odoo:15.0
     container_name: odoo
@@ -35,11 +34,9 @@ services:
       - ${PWD}/odoo/config:/etc/odoo
       - ${PWD}/odoo/log:/var/log/odoo/
       - ${PWD}/odoo/data:/var/lib/odoo
-    restart: always             # run as a service
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: pgadmin4
-    restart: unless-stopped
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: Passw0rd
