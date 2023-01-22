@@ -5,4 +5,5 @@ docker-compose down		#
 tar -xzf app.tgz		# 
 tar -czf app.tgz *		# 
 rm app.tgz			# 
+tar --exclude='*.tgz' -czf app_$(date +%F_%H-%M)_${HOSTNAME}.tgz * .env	# Comprime todo el entorno en tgz con marca temporal 
 exit				# Salir
