@@ -10,7 +10,8 @@ while true; do
         echo "CASOS DE USO COMUNES:"
         choice=$(smenu -n20 -W $'\t\n' -N -c -b -e "#.*" -g -s /./set-permissions.sh < menu.txt)
         echo -e "\n$ $choice"
-        $choice || exit $?
+        [[ "$choice" -eq "exit" ]] && exit 0
+        bash -c "$choice" || exit $?
         echo -e "\t${green}OK${nc}\n"
     else
         echo "Instala el paquete smenu para que este menú sea interactivo:"
