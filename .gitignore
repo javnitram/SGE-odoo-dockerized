@@ -1,1 +1,5 @@
-postgres/
+Vagrantfile
+.vagrant
+vackup
+*.tgz
+*.tar.gz
