@@ -1,16 +1,15 @@
 version: '3.8'
 services:
   db:
-    image: postgres:12
+    image: postgres:15
     container_name: postgres
-    user: $DOCKER_USER
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_PASSWORD=odoo
       - POSTGRES_USER=odoo
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
-      - ${PWD}/postgres:/var/lib/postgresql/data/pgdata
+      - pgdata:/var/lib/postgresql/data/pgdata
     ports:
       # <Puerto expuesto> : < Puerto dentro del container>
       # Solo para desarrollo. Comentar en produccion
@@ -20,7 +19,7 @@ services:
       # Solo para desarrollo. Comentar en produccion
       - '5432'
   odoo:
-    image: odoo:15.0
+    image: odoo:16.0
     container_name: odoo
     depends_on:
       - db
@@ -30,10 +29,10 @@ services:
     command: -- --dev=reload
     # command: odoo scaffold module_technical_name /mnt/extra-addons
     volumes:
-      - ${PWD}/odoo/addons:/mnt/extra-addons
-      - ${PWD}/odoo/config:/etc/odoo
-      - ${PWD}/odoo/log:/var/log/odoo/
-      - ${PWD}/odoo/data:/var/lib/odoo
+      - ./odoo/addons:/mnt/extra-addons
+      - ./odoo/config:/etc/odoo
+      - odoo_log:/var/log/odoo/
+      - odoo_data:/var/lib/odoo
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: pgadmin4
@@ -47,4 +46,8 @@ services:
     links:
       - "db:pgsql-server"
     volumes:
-      - ${PWD}/pgadmin4/servers.json:/pgadmin4/servers.json
+      - ./pgadmin4/servers.json:/pgadmin4/servers.json
+volumes:
+    pgdata:
+    odoo_log:
+    odoo_data:
