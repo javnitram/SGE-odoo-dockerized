@@ -1,5 +1,6 @@
 Vagrantfile
 .vagrant
+.vscode
 vackup
 *.tgz
 *.tar.gz

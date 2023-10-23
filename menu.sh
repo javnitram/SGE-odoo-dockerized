@@ -16,7 +16,7 @@ GREEN_TEXT='\033[0;32m'
 RESET_TEXT='\033[0m' # No Color
 VACKUP="./vackup"
 PREFFIX="$(basename "$(pwd | tr '[:upper:]' '[:lower:]')" )"
-LATEST_BACKUP="backup_${PREFFIX}_latest.tgz"
+LATEST_BACKUP="backup_${PREFFIX}_latest_${HOSTNAME}.tgz"
 
 # @see https://github.com/BretFisher/docker-vackup
 [ -f vackup ] || curl -sSL https://raw.githubusercontent.com/BretFisher/docker-vackup/main/vackup -o "$VACKUP"
@@ -73,7 +73,7 @@ EOF
 # de ficheros o directorios del anfitrión en el contenedor.
 # Los bind mounts dependen del sistema ficheros subyacente y pueden dañar el sistema anfitrión. 
 # Se recomienda usar volúmenes gestionados por Docker para hacer persistentes los datos de los
-# contenedores, los bind mount son apropiados para compartir ficheros de configurar y código
+# contenedores, los bind mount son apropiados para compartir ficheros de configuración y código,
 # como es el caso de este proyecto.
 # @see https://docs.docker.com/storage/bind-mounts/
 #      https://docs.docker.com/storage/#good-use-cases-for-bind-mounts
@@ -90,7 +90,7 @@ function save_backup() {
     done
     backup="backup_${PREFFIX}_$(date +%F_%H-%M)_${HOSTNAME}.tgz"
     tar --exclude='backup*.tgz' -czf "$backup" * || error="true"
-    ln -frs "$backup" "$LATEST_BACKUP" || error="true"
+    ln -f "$backup" "$LATEST_BACKUP" || error="true"
     sed '1,/^volumes:/d' docker-compose.yml | tr -d ' :\r' | grep -v '^#' | while read -r volume; do
         full_volume_name="${PREFFIX}_${volume}"
         rm -f "${full_volume_name}.tar.gz" || error="true"
@@ -115,13 +115,14 @@ function restore_latest_backup() {
     error="false"
     if [ -f "$LATEST_BACKUP" ];
     then
-        echo "Se esperaba un fichero llamado '$LATEST_BACKUP' y no se encontró" >&2
-    else
         tar -xvzf "$LATEST_BACKUP" || error="true"
         sed '1,/^volumes:/d' docker-compose.yml | tr -d ' :\r' | grep -v '^#' | while read -r volume; do
             full_volume_name="${PREFFIX}_${volume}"
             "$VACKUP" import "${full_volume_name}.tar.gz" "${full_volume_name}"
+            rm -f "${full_volume_name}.tar.gz" || error="true"
         done
+    else
+        echo "Se esperaba un fichero llamado '$LATEST_BACKUP' y no se encontró" >&2 ||error="true"
     fi
 
     if $error; then
