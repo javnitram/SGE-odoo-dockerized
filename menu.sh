@@ -15,7 +15,7 @@ RED_TEXT='\033[0;31m'
 GREEN_TEXT='\033[0;32m'
 RESET_TEXT='\033[0m' # No Color
 VACKUP="./vackup"
-PREFFIX="$(basename "$(pwd | tr '[:upper:]' '[:lower:]')" )"
+PREFFIX="$( basename "$(pwd)" | tr '[:upper:]' '[:lower:]' | tr -d '.' )"
 LATEST_BACKUP="backup_${PREFFIX}_latest_${HOSTNAME}.tgz"
 
 # @see https://github.com/BretFisher/docker-vackup
@@ -78,6 +78,7 @@ EOF
 # @see https://docs.docker.com/storage/bind-mounts/
 #      https://docs.docker.com/storage/#good-use-cases-for-bind-mounts
 function set_permissions() {
+    chmod o+rwx .
     set_permissions_for_containers
     set_permissions_for_host
 }
