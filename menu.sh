@@ -16,7 +16,8 @@ GREEN_TEXT='\033[0;32m'
 RESET_TEXT='\033[0m' # No Color
 VACKUP="./vackup"
 PREFFIX="$( basename "$(pwd)" | tr '[:upper:]' '[:lower:]' | tr -d '.' )"
-LATEST_BACKUP="backup_${PREFFIX}_latest_${HOSTNAME}.tgz"
+LATEST_BACKUP_CURRENT_HOST="backup_${PREFFIX}_latest_${HOSTNAME}.tgz"
+BACKUPS_CURRENT_DIR_ANY_HOST="backup_${PREFFIX}_*.tgz"
 
 # @see https://github.com/BretFisher/docker-vackup
 [ -f vackup ] || curl -sSL https://raw.githubusercontent.com/BretFisher/docker-vackup/main/vackup -o "$VACKUP"
@@ -85,13 +86,14 @@ function set_permissions() {
 
 function save_backup() {
     error="false"
+    chmod o+rwx . || error="true"
     sed '1,/^volumes:/d' docker-compose.yml | tr -d ' :\r' | grep -v '^#' | while read -r volume; do
         full_volume_name="${PREFFIX}_${volume}"
         "$VACKUP" export "${full_volume_name}" "${full_volume_name}.tar.gz" || error="true"
     done
     backup="backup_${PREFFIX}_$(date +%F_%H-%M)_${HOSTNAME}.tgz"
     tar --exclude='backup*.tgz' -czf "$backup" * || error="true"
-    ln -f "$backup" "$LATEST_BACKUP" || error="true"
+    ln -f "$backup" "$LATEST_BACKUP_CURRENT_HOST" || error="true"
     sed '1,/^volumes:/d' docker-compose.yml | tr -d ' :\r' | grep -v '^#' | while read -r volume; do
         full_volume_name="${PREFFIX}_${volume}"
         rm -f "${full_volume_name}.tar.gz" || error="true"
@@ -108,22 +110,30 @@ EOF
         echo -ne "${RESET_TEXT}"
         exit 1
     else
-        echo -e "Se ha creado el fichero '$backup' y un enlace simbólico a este como '$LATEST_BACKUP'\n"
+        echo -e "Se ha creado el fichero '$backup' y un enlace a este como '$LATEST_BACKUP_CURRENT_HOST'\n"
     fi
 }
 
-function restore_latest_backup() {
+function restore_backup() {
     error="false"
-    if [ -f "$LATEST_BACKUP" ];
+    chmod o+rwx . || error="true"
+    local selected_backup
+    if ls $BACKUPS_CURRENT_DIR_ANY_HOST >& /dev/null
     then
-        tar -xvzf "$LATEST_BACKUP" || error="true"
-        sed '1,/^volumes:/d' docker-compose.yml | tr -d ' :\r' | grep -v '^#' | while read -r volume; do
-            full_volume_name="${PREFFIX}_${volume}"
-            "$VACKUP" import "${full_volume_name}.tar.gz" "${full_volume_name}"
-            rm -f "${full_volume_name}.tar.gz" || error="true"
-        done
+        selected_backup=$(ls -1r $BACKUPS_CURRENT_DIR_ANY_HOST |smenu -n20 -W $'\t\n' -N -c -b)
+        echo -e "Se va a restaurar... $selected_backup"
+        tar -xvzf "$selected_backup" || error="true"
+        if ! error
+        then
+            sed '1,/^volumes:/d' docker-compose.yml | tr -d ' :\r' | grep -v '^#' | while read -r volume; do
+                full_volume_name="${PREFFIX}_${volume}"
+                "$VACKUP" import "${full_volume_name}.tar.gz" "${full_volume_name}"
+                rm -f "${full_volume_name}.tar.gz" || error="true"
+            done
+        fi
     else
-        echo "Se esperaba un fichero llamado '$LATEST_BACKUP' y no se encontró" >&2 ||error="true"
+        echo "Se esperaba algún fichero con nomenclatura '$BACKUPS_CURRENT_DIR_ANY_HOST', donde '$PREFFIX' hace referencia al directorio actual" >&2
+        error="true"
     fi
 
     if $error; then
@@ -137,7 +147,7 @@ EOF
         echo -ne "${RESET_TEXT}"
         exit 1
     else
-        echo -e "Se ha restaurado el fichero '$LATEST_BACKUP'\n"
+        echo -e "Se ha restaurado el fichero '$selected_backup'\n"
     fi
 }
 

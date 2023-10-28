@@ -4,5 +4,5 @@ docker-compose up -d		#
 docker-compose down		# 
 docker-compose logs -f		# 
 save_backup		# Crea un fichero backup con marca temporal
-restore_latest_backup		# Restaura el último backup
+restore_backup		# Restaura el último backup
 exit				# Salir

@@ -2,6 +2,8 @@
 Proyecto inicial para principantes con el stack de Odoo, PostgreSQL, PgAdmin4, Docker y Docker Compose.
 
 ## Contenidos
+- [Introducción](#introducción)
+  - [Contenidos](#contenidos)
 - [Objetivos](#objetivos)
 - [Primeros pasos](#primeros-pasos)
 - [Acceso a Odoo, creación de la primera base de datos en Odoo y consulta desde PgAdmin4](#acceso-a-odoo-creación-de-la-primera-base-de-datos-en-odoo-y-consulta-desde-pgadmin4)
@@ -127,7 +129,7 @@ docker-compose down
 La opción **save_backup** del script ```menu.sh``` guarda el estado de los volúmenes así como el contenido del directorio de trabajo en un fichero con prefijo ```backup```, seguido del nombre del directorio de trabajo en minúsculas, fecha, hora y nombre de host y extensión .tgz. Cuando guardamos un nuevo backup se genera/actualizado un enlace duro con el mismo nombre del fichero generado, pero reemplazando la fecha y hora por la palabra **latest**. Por ejemplo, el último backup del directorio de trabajo **/home/alumno/Escritorio/SGE-prueba/** del host **pcdam-10** se llamará
 **backup_sge-prueba_latest_pcdam-10.tgz**.
 
-La opción **restore_backup** del script ```menu.sh``` restaura la copia de seguridad a partir del backup señalado por el fichero anotado como **latest**. La copia de seguridad puede restaurarse en el mismo host o en otro, pero es necesario que el directorio de trabajo se llame como el directorio original, por ejemplo el fichero **backup_sge-prueba_latest_pcdam-10.tgz** debe restaurarse en el directorio **SGE-prueba** o **sge-prueba**.
+La opción **restore_backup** del script ```menu.sh``` restaura la copia de seguridad a partir del backup seleccionado por el usuario entre una lista de posibles opciones. La copia de seguridad puede restaurarse en el mismo host o en otro, pero es necesario que el directorio de trabajo se llame como el directorio original, por ejemplo el fichero **backup_sge-prueba_latest_pcdam-10.tgz** debe restaurarse en el directorio **SGE-prueba** o **sge-prueba**. Aquellos ficheros que no cumplan esta nomenclatura no serán opciones elegibles en **restore_backup**.
 
 Si al copiar tu fichero de backup olvidaste copiar ficheros menu.sh o menu.txt, puedes recuperarlos desde el propio fichero .tgz con el siguiente comando...
 ```bash
