@@ -87,17 +87,23 @@ function set_permissions() {
 function save_backup() {
     error="false"
     chmod o+rwx . || error="true"
-    sed '1,/^volumes:/d' docker-compose.yml | tr -d ' :\r' | grep -v '^#' | while read -r volume; do
-        full_volume_name="${PREFFIX}_${volume}"
-        "$VACKUP" export "${full_volume_name}" "${full_volume_name}.tar.gz" || error="true"
-    done
-    backup="backup_${PREFFIX}_$(date +%F_%H-%M)_${HOSTNAME}.tgz"
-    tar --exclude='backup*.tgz' -czf "$backup" * || error="true"
-    ln -f "$backup" "$LATEST_BACKUP_CURRENT_HOST" || error="true"
-    sed '1,/^volumes:/d' docker-compose.yml | tr -d ' :\r' | grep -v '^#' | while read -r volume; do
-        full_volume_name="${PREFFIX}_${volume}"
-        rm -f "${full_volume_name}.tar.gz" || error="true"
-    done
+    if docker-compose ps -aq | grep . > /dev/null
+    then
+        echo "Hay contenedores en ejecución, ejecuta 'docker-compose down' antes de guardar un backup" >&2
+        error="true"
+    else
+        sed '1,/^volumes:/d' docker-compose.yml | tr -d ' :\r' | grep -v '^#' | while read -r volume; do
+            full_volume_name="${PREFFIX}_${volume}"
+            "$VACKUP" export "${full_volume_name}" "${full_volume_name}.tar.gz" || error="true"
+        done
+        backup="backup_${PREFFIX}_$(date +%F_%H-%M)_${HOSTNAME}.tgz"
+        tar --exclude='backup*.tgz' -czf "$backup" * || error="true"
+        ln -f "$backup" "$LATEST_BACKUP_CURRENT_HOST" || error="true"
+        sed '1,/^volumes:/d' docker-compose.yml | tr -d ' :\r' | grep -v '^#' | while read -r volume; do
+            full_volume_name="${PREFFIX}_${volume}"
+            rm -f "${full_volume_name}.tar.gz" || error="true"
+        done
+    fi
 
     if $error; then
         echo -ne "${RED_TEXT}"
@@ -118,7 +124,11 @@ function restore_backup() {
     error="false"
     chmod o+rwx . || error="true"
     local selected_backup
-    if ls $BACKUPS_CURRENT_DIR_ANY_HOST >& /dev/null
+    if docker-compose ps -aq | grep . > /dev/null
+    then
+        echo "Hay contenedores en ejecución, ejecuta 'docker-compose down' antes de restaurar un backup" >&2
+        error="true"
+    elif ls $BACKUPS_CURRENT_DIR_ANY_HOST >& /dev/null
     then
         selected_backup=$(ls -1r $BACKUPS_CURRENT_DIR_ANY_HOST |smenu -n20 -W $'\t\n' -N -c -b)
         echo -e "Se va a restaurar... $selected_backup"
@@ -127,6 +137,7 @@ function restore_backup() {
         then
             sed '1,/^volumes:/d' docker-compose.yml | tr -d ' :\r' | grep -v '^#' | while read -r volume; do
                 full_volume_name="${PREFFIX}_${volume}"
+                docker volume rm "${full_volume_name}"
                 "$VACKUP" import "${full_volume_name}.tar.gz" "${full_volume_name}"
                 rm -f "${full_volume_name}.tar.gz" || error="true"
             done
