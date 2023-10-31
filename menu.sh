@@ -95,6 +95,7 @@ function save_backup() {
         sed '1,/^volumes:/d' docker-compose.yml | tr -d ' :\r' | grep -v '^#' | while read -r volume; do
             full_volume_name="${PREFFIX}_${volume}"
             "$VACKUP" export "${full_volume_name}" "${full_volume_name}.tar.gz" || error="true"
+            chmod o+r "${full_volume_name}.tar.gz"
         done
         backup="backup_${PREFFIX}_$(date +%F_%H-%M)_${HOSTNAME}.tgz"
         tar --exclude='backup*.tgz' -czf "$backup" * || error="true"
@@ -138,6 +139,7 @@ function restore_backup() {
             sed '1,/^volumes:/d' docker-compose.yml | tr -d ' :\r' | grep -v '^#' | while read -r volume; do
                 full_volume_name="${PREFFIX}_${volume}"
                 docker volume rm "${full_volume_name}"
+                chmod o+r "${full_volume_name}.tar.gz"
                 "$VACKUP" import "${full_volume_name}.tar.gz" "${full_volume_name}"
                 rm -f "${full_volume_name}.tar.gz" || error="true"
             done
