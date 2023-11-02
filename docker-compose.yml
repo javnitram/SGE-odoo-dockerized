@@ -29,8 +29,8 @@ services:
     command: -- --dev=reload
     # command: odoo scaffold module_technical_name /mnt/extra-addons
     volumes:
-      - ./odoo/addons:/mnt/extra-addons
-      - ./odoo/config:/etc/odoo
+      - ${PWD}/odoo/addons:/mnt/extra-addons
+      - ${PWD}/odoo/config:/etc/odoo
       - odoo_log:/var/log/odoo/
       - odoo_data:/var/lib/odoo
   pgadmin:
@@ -46,7 +46,7 @@ services:
     links:
       - "db:pgsql-server"
     volumes:
-      - ./pgadmin4/servers.json:/pgadmin4/servers.json
+      - ${PWD}/pgadmin4/servers.json:/pgadmin4/servers.json
 volumes:
     pgdata:
     odoo_log:
