@@ -48,6 +48,14 @@ Si el paquete está instalado, el menú debería ser interactivo:
 
 Puedes moverte por el menú utilizando los cursores (:arrow_up:, :arrow_down:) o directamente el número de la opción que quieras ejecutar. Pulsa _Enter_ para ejecutar la selección.
 
+Si estás en el aula, ejecuta...
+
+```bash
+set_permissions
+```
+
+... para dar los permisos adecuados a los directorios y ficheros que usarán los contenedores.
+
 Puedes lanzar los servicios en segundo plano con la opción...
 
 ```bash
@@ -116,7 +124,7 @@ El bloque **volumes** del nivel principal sí define volúmenes propiamente dich
 
 Sin embargo, en el bloque volumes a nivel de otros servicios, puedes ver la configuración de otro tipo de almacenamiento persistente, en particular, de **bind mounts**. Para bien o para mal, este mecanismo permitiría modificar el sistema de ficheros del anfitrión desde el contenedor, con las implicaciones de seguridad que ello conlleva. A su vez, **bind mounts** sí permiten que los ficheros del contenedor se modifiquen desde el anfitrión y se consideran apropiados para compartir ficheros de configuración y código, como es el caso de este proyecto. Por ejemplo, la línea ```./odoo/addons:/mnt/extra-addons``` mapea la ruta relativa **odoo/addons** de este proyecto dentro el contenedor ```odoo``` en la ruta **/mnt/extra-addons**.
 
-Dada la naturaleza de los **bind mounts**, es razonable que en ocasiones tengas problemas para acceder desde el anfitrión a ficheros creados desde un contenedor (o viceversa). Cuando haya importantes nuevos ficheros en las rutas mapeadas con este tipo de almacenamiento, ejecuta la opción **set_permissions** del script ```menu.sh```.
+Dada la naturaleza de los **bind mounts**, es razonable que en ocasiones tengas problemas para acceder desde el anfitrión a ficheros creados desde un contenedor (o viceversa). Cuando haya nuevos ficheros en las rutas mapeadas con este tipo de almacenamiento, ejecuta la opción **set_permissions** del script ```menu.sh```.
 
 # Gestión de backups
 
