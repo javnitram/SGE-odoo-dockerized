@@ -46,7 +46,7 @@ services:
     links:
       - "db:pgsql-server"
     volumes:
-      - ${PWD}/pgadmin4/servers.json:/pgadmin4/servers.json
+      - ./pgadmin4/servers.json:/pgadmin4/servers.json
 volumes:
     pgdata:
     odoo_log:
