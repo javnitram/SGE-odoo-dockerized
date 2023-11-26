@@ -35,7 +35,7 @@ function set_permissions_for_containers() {
                     echo "Estableciendo permisos en el contenedor con id $container_id basado en la imagen $i, punto de montaje $mount"
                     docker exec --privileged --user root "$container_id" sh -c "/usr/bin/find $mount -type d -exec /bin/chmod 777 {} \;" 
                     docker exec --privileged --user root "$container_id" sh -c "/usr/bin/find $mount -type f -exec /bin/chmod 666 {} \;" 
-                    docker exec --privileged --user root "$container_id" sh -c "/bin/chown -R "$(id -u):$(id -g)"' $mount"
+                    docker exec --privileged --user root "$container_id" sh -c "/bin/chown -R $(id -u):$(id -g) $mount"
             done
         done
     done
