@@ -16,7 +16,13 @@ RED_TEXT='\033[0;31m'
 GREEN_TEXT='\033[0;32m'
 RESET_TEXT='\033[0m' # No Color
 VACKUP="./vackup"
-PREFFIX="$( basename "$(pwd)" | tr '[:upper:]' '[:lower:]' | tr -d '.' )"
+source .env 2> /dev/null
+if [ -z "${COMPOSE_PROJECT_NAME}" ]; then
+    PREFFIX="$( basename "$(pwd)" )"
+else
+    PREFFIX="${COMPOSE_PROJECT_NAME}"
+fi
+PREFFIX="$( echo "${PREFFIX}" | tr '[:upper:]' '[:lower:]' | tr -d '.' )"
 LATEST_BACKUP_CURRENT_HOST="backup_${PREFFIX}_latest_${HOSTNAME}.tgz"
 BACKUPS_CURRENT_DIR_ANY_HOST="backup_${PREFFIX}_*.tgz"
 
@@ -89,7 +95,7 @@ function set_permissions() {
 function save_backup() {
     error="false"
     chmod o+rwx . || error="true"
-    if docker-compose ps -aq | grep . > /dev/null
+    if false && docker-compose ps -aq | grep . > /dev/null
     then
         echo "Hay contenedores en ejecución, ejecuta 'docker-compose down' antes de guardar un backup" >&2
         error="true"
