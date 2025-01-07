@@ -106,7 +106,7 @@ function save_backup() {
             chmod o+r "${full_volume_name}.tar.gz"
         done
         backup="backup_${PREFFIX}_$(date +%F_%H-%M)_${HOSTNAME}.tgz"
-        tar --exclude='backup*.tgz' -czf "$backup" * || error="true"
+        tar --exclude='backup*.tgz' -czf "$backup" * .env || error="true"
         ln -f "$backup" "$LATEST_BACKUP_CURRENT_HOST" || error="true"
         sed '1,/^volumes:/d' docker-compose.yml | tr -d ' :\r' | grep -v '^#' | while read -r volume; do
             full_volume_name="${PREFFIX}_${volume}"
