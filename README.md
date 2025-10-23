@@ -59,13 +59,13 @@ set_permissions
 Puedes lanzar los servicios en segundo plano con la opción...
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 Para ver su salida, puedes usar la opción...
 
 ```bash
-docker-compose logs -f
+docker compose logs -f
 ```
 
 ... con ```Control + C``` puedes interrumpir el comando sin parar los servicios.
@@ -73,7 +73,7 @@ docker-compose logs -f
 También puedes levantar los contenedores en primer plano para ver su salida inmediatamente, el comando es el mismo, omitiendo la opción ```-d``` o ```--detach```...
 
 ```bash
-docker-compose up
+docker compose up
 ```
 
 ...pero recuerda, que en este caso, con ```Control + C``` estarás interrumpiendo los servicios.
@@ -94,7 +94,7 @@ Los cambios que introduzcas en ```menu.txt``` aparecerán como nuevas opciones e
 
 # Acceso a Odoo, creación de la primera base de datos en Odoo y consulta desde PgAdmin4
 
-Con ```docker ps``` o ```docker-compose ps``` asegúrate de que los contenedores están corriendo. 
+Con ```docker ps``` o ```docker compose ps``` asegúrate de que los contenedores están corriendo. 
 
 Accede a la aplicación web de Odoo, aprovechando que el fichero ```docker-compose.yml``` tiene configurados varios reenvíos de puertos.
 ```bash
@@ -131,7 +131,7 @@ Dada la naturaleza de los **bind mounts**, es razonable que en ocasiones tengas 
 El script ```menu.sh``` proporciona la funcionalidad para exportar e importar tu entorno, de modo que puedas hacer backups o llevarte tu trabajo a casa. Para gestionar backups, se recomienda que detengas todos los servicios:
 
 ```bash
-docker-compose down
+docker compose down
 ```
 
 La opción **save_backup** del script ```menu.sh``` guarda el estado de los volúmenes así como el contenido del directorio de trabajo en un fichero con prefijo ```backup```, seguido del nombre del directorio de trabajo en minúsculas, fecha, hora y nombre de host y extensión .tgz. Cuando guardamos un nuevo backup se genera/actualizado un enlace duro con el mismo nombre del fichero generado, pero reemplazando la fecha y hora por la palabra **latest**. Por ejemplo, el último backup del directorio de trabajo **/home/alumno/Escritorio/SGE-prueba/** del host **pcdam-10** se llamará
